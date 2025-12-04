@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audiobook Converter</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+    <div class="container">
+        <h1>🎧 AudioConverter</h1>
+        <p>Turn your documents into speech instantly.</p>
+
+        <div class="upload-box" id="drop-area">
+            <input type="file" id="fileInput" accept=".pdf, .docx, .txt" hidden>
+            <label for="fileInput" class="upload-btn">Choose File</label>
+            <span id="fileName">No file chosen</span>
+        </div>
+
+        <button id="convertBtn" onclick="uploadFile()">Convert to MP3</button>
+
+        <div id="loader" class="hidden">Converting...</div>
+
+        <div id="resultArea" class="hidden">
+            <audio id="audioPlayer" controls></audio>
+            <br>
+            <a id="downloadLink" href="#" download="audiobook.mp3">Download MP3</a>
+        </div>
+    </div>
+
+    <script>
+        const fileInput = document.getElementById('fileInput');
+        const fileNameDisplay = document.getElementById('fileName');
+        
+        fileInput.addEventListener('change', () => {
+            fileNameDisplay.textContent = fileInput.files[0] ? fileInput.files[0].name : "No file chosen";
+        });
+
+        async function uploadFile() {
+            const file = fileInput.files[0];
+            if (!file) return alert("Please select a file first!");
+
+            document.getElementById('loader').style.display = 'block';
+            document.getElementById('convertBtn').disabled = true;
+            document.getElementById('resultArea').style.display = 'none';
+
+            const formData = new FormData();
+            formData.append('file', file);
+
+            try {
+                const response = await fetch('/convert', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!response.ok) throw new Error("Conversion failed");
+
+                const blob = await response.blob();
+                const audioUrl = URL.createObjectURL(blob);
+
+                const audioPlayer = document.getElementById('audioPlayer');
+                audioPlayer.src = audioUrl;
+                document.getElementById('downloadLink').href = audioUrl;
+                
+                document.getElementById('resultArea').style.display = 'block';
+
+            } catch (error) {
+                alert(error.message);
+            } finally {
+                document.getElementById('loader').style.display = 'none';
+                document.getElementById('convertBtn').disabled = false;
+            }
+        }
+    </script>
+</body>
+</html>
