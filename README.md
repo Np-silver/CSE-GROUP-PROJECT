@@ -81,14 +81,16 @@ http://127.0.0.1:5000/
 Project Structure
 
 CSE-PROJECT
-│
-├── readme.md 
+
+├──readme.md 
+
 ├── requirements.txt
-├──  app.py           
-├── static/               
-│   └── style.css         
-└── templates/            
-    └── index.html        
+
+├──  app.py      
+
+├── style.css   
+
+└── index.html        
 
 
 How to Use
